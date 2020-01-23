@@ -9,6 +9,8 @@
 import psycopg2
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Example import config
+from Example import Repository
+from Example import DBType
 
 
 Create_Tables_Commands=(
@@ -22,7 +24,7 @@ Create_Tables_Commands=(
         """
          CREATE TABLE services(
          service_id  SERIAL PRIMARY KEY ,
-         service_name VARCHAR(15) NOT NULL ,
+         Value VARCHAR(15) NOT NULL ,
          resource_id_fk INTEGER ,
          FOREIGN KEY (resource_id_fk) REFERENCES resources(resource_id) ,
          stock INTEGER NOT NULL
@@ -32,12 +34,14 @@ Create_Tables_Commands=(
         """
         CREATE TABLE users(
         user_id SERIAL PRIMARY KEY NOT NULL ,
-        user_name VARCHAR(50) ,
+        first_name VARCHAR(50) ,
+        last_name VARCHAR(80) ,
         user_national_code VARCHAR(15) ,
         user_email VARCHAR(80) ,
         user_passwordhash VARCHAR(500) ,
         user_salt VARCHAR(80) ,
-        user_registerdate DATE NULL 
+        user_registerdate DATE NULL ,
+        Balance INTEGER
         )
         """
         ,
@@ -49,30 +53,52 @@ Create_Tables_Commands=(
         FOREIGN KEY (service_id_fk) REFERENCES services(service_id) ,
         resource_id_fk INTEGER,
         FOREIGN KEY (resource_id_fk) REFERENCES resources(resource_id) ,
+        order_id INTEGER ,
+        PRIMARY KEY(user_id,order_id,resource_id)
+        )
+        """
+        ,
+        """
+        CREATE TABLE user_service_info(
+        order_id_fk INTEGER ,
+        PRIMARY KEY(order_id_fk),
+        FOREIGN KEY(order_id_fk) REFERENCES user_services(order_id),
         created_date DATE ,
         end_date DATE NULL ,
-        packet_id INTEGER ,
-        PRIMARY KEY(user_id_fk,packet_id)
+        ssh_key VARCHAR(800) ,
+        ssh_name VARCHAR(500)
         )
         """
         ,
         """
-        CREATE TABLE user_additional(
-        additional_id SERIAL PRIMARY KEY ,
-        additional_name VARCHAR(50)
-        )
-        """
-        ,
-        """
-        CREATE TABLE user_detail(
+        CREATE TABLE ticket(
+        ticket_id INTEGER SERIAL,
+        PRIMARY KEY(ticket_id),
         user_id_fk INTEGER ,
         FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
-        user_additional_id_fk INTEGER ,
-        FOREIGN KEY (user_additional_id_fk) REFERENCES user_additional(additional_id) ,
-        content VARCHAR(500) NULL ,
-        context_name VARCHAR(50) 
-        ) 
+        created_date DATE ,
+        content VARCHAR(500) ,
+        reply_date DATE ,
+        reply_content VARCHAR(500),
+        status INTEGER
+        )
         """
+        #CREATE TABLE user_additional(
+        #additional_id SERIAL PRIMARY KEY ,
+        #additional_name VARCHAR(50)
+        #)
+        #"""
+        #,
+        #"""
+        #CREATE TABLE user_detail(
+        #user_id_fk INTEGER ,
+        #FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
+        #user_additional_id_fk INTEGER ,
+        #FOREIGN KEY (user_additional_id_fk) REFERENCES user_additional(additional_id) ,
+        #content VARCHAR(500) NULL ,
+        #context_name VARCHAR(50)
+        #)
+        #"""
     )
 
 
@@ -83,19 +109,20 @@ Connection = None
 def connecttodb():
         con = None
         try:
-            params = config()
+            params = config.config()
             print('connecting to PostgreSql DB ...')
             con = psycopg2.connect(port="5400",host="localhost",database="CloudSpring", user="postgres", password="rememberme")
             print('after .connct')
             # create cursor
             cursor = con.cursor()
+            global Connection
             Connection = con
             print('Connected to PostgreSql DB !')
-            """sqlservercommand = Create_Tables_Commands
+            sqlservercommand = Create_Tables_Commands
             for command in sqlservercommand:
                 cursor.execute(command)
 
-            con.commit()"""
+            con.commit()
             print('commands execution done ! :)')
             db_version = cursor.fetchone()
             print(db_version)
@@ -148,9 +175,15 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     connecttodb()
-    app = QtWidgets.QApplication(sys.argv)
+    #Repo = Repository.Repository(Connection)
+    #user = DBType.User("Amir","09245857","a.m.sh.playstore@gmail.com","abcd909230","zxcvbnm")
+    #Connection.cursor.execute()
+    #result = Repository.RepositoryResult()
+    #result = Repo.AddUser(user)
+    #print(result)
+    """app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())"""
