@@ -8,9 +8,9 @@
 
 import psycopg2
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Example import config
+from config import config
 
-
+help(config)
 Create_Tables_Commands=(
         """ 
         CREATE TABLE resources (
@@ -85,7 +85,7 @@ def connecttodb():
         try:
             params = config()
             print('connecting to PostgreSql DB ...')
-            con = psycopg2.connect(port="5400",host="localhost",database="CloudSpring", user="postgres", password="rememberme")
+            con = psycopg2.connect(port="5432",host="localhost",database="CloudSpring", user="postgres", password="postgres")
             print('after .connct')
             # create cursor
             cursor = con.cursor()
