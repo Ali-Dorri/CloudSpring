@@ -22,7 +22,7 @@ Create_Tables_Commands=(
         """
          CREATE TABLE services(
          service_id  SERIAL PRIMARY KEY ,
-         service_name VARCHAR(15) NOT NULL ,
+         Value VARCHAR(15) NOT NULL ,
          resource_id_fk INTEGER ,
          FOREIGN KEY (resource_id_fk) REFERENCES resources(resource_id) ,
          stock INTEGER NOT NULL
@@ -32,12 +32,25 @@ Create_Tables_Commands=(
         """
         CREATE TABLE users(
         user_id SERIAL PRIMARY KEY NOT NULL ,
-        user_name VARCHAR(50) ,
+        first_name VARCHAR(50) ,
+        last_name VARCHAR(80) ,
         user_national_code VARCHAR(15) ,
         user_email VARCHAR(80) ,
         user_passwordhash VARCHAR(500) ,
         user_salt VARCHAR(80) ,
-        user_registerdate DATE NULL 
+        user_registerdate DATE NULL ,
+        Balance INTEGER
+        )
+        """
+        ,
+        """
+        CREATE TABLE user_service_info(
+        order_id_pk INTEGER ,
+        PRIMARY KEY(order_id_pk),
+        created_date DATE ,
+        end_date DATE NULL ,
+        ssh_key VARCHAR(800) ,
+        ssh_name VARCHAR(500)
         )
         """
         ,
@@ -47,33 +60,27 @@ Create_Tables_Commands=(
         FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
         service_id_fk INTEGER ,
         FOREIGN KEY (service_id_fk) REFERENCES services(service_id) ,
-        resource_id_fk INTEGER,
-        FOREIGN KEY (resource_id_fk) REFERENCES resources(resource_id) ,
-        created_date DATE ,
-        end_date DATE NULL ,
-        packet_id INTEGER ,
-        PRIMARY KEY(user_id_fk,packet_id)
+        order_id INTEGER ,
+        FOREIGN KEY (order_id) REFERENCES user_service_info(order_id_pk) ,
+        PRIMARY KEY(user_id_fk,service_id_fk,order_id)
         )
         """
         ,
+
         """
-        CREATE TABLE user_additional(
-        additional_id SERIAL PRIMARY KEY ,
-        additional_name VARCHAR(50)
-        )
-        """
-        ,
-        """
-        CREATE TABLE user_detail(
+        CREATE TABLE ticket(
+        ticket_id SERIAL,
+        PRIMARY KEY(ticket_id),
         user_id_fk INTEGER ,
         FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
-        user_additional_id_fk INTEGER ,
-        FOREIGN KEY (user_additional_id_fk) REFERENCES user_additional(additional_id) ,
-        content VARCHAR(500) NULL ,
-        context_name VARCHAR(50) 
-        ) 
+        created_date DATE ,
+        content VARCHAR(500) ,
+        reply_date DATE ,
+        reply_content VARCHAR(500),
+        status INTEGER
+        )
         """
-    )
+)
 
 
 
