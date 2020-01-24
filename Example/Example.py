@@ -23,7 +23,7 @@ Create_Tables_Commands=(
          CREATE TABLE services(
          service_id  SERIAL PRIMARY KEY ,
          Value VARCHAR(15) NOT NULL ,
-         resource_id_fk INTEGER ,
+         resource_id_fk INTEGER NOT NULL,
          FOREIGN KEY (resource_id_fk) REFERENCES resources(resource_id) ,
          stock INTEGER NOT NULL
             )
@@ -32,12 +32,12 @@ Create_Tables_Commands=(
         """
         CREATE TABLE users(
         user_id SERIAL PRIMARY KEY NOT NULL ,
-        first_name VARCHAR(50) ,
-        last_name VARCHAR(80) ,
+        first_name VARCHAR(50) NOT NULL,
+        last_name VARCHAR(80) NOT NULL,
         user_national_code VARCHAR(15) ,
         user_email VARCHAR(80) ,
-        user_passwordhash VARCHAR(500) ,
-        user_salt VARCHAR(80) ,
+        user_passwordhash VARCHAR(500) NOT NULL,
+        user_salt VARCHAR(80) NOT NULL,
         user_registerdate DATE NULL ,
         Balance INTEGER
         )
@@ -71,13 +71,13 @@ Create_Tables_Commands=(
         CREATE TABLE ticket(
         ticket_id SERIAL,
         PRIMARY KEY(ticket_id),
-        user_id_fk INTEGER ,
+        user_id_fk INTEGER NOT NULL,
         FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
         created_date DATE ,
         content VARCHAR(500) ,
         reply_date DATE ,
         reply_content VARCHAR(500),
-        status INTEGER
+        status INTEGER NOT NULL
         )
         """
 )
