@@ -47,6 +47,8 @@ Create_Tables_Commands=(
         CREATE TABLE user_service_info(
         order_id_pk INTEGER ,
         PRIMARY KEY(order_id_pk),
+        user_id_fk INTEGER NOT NULL,
+        FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
         created_date DATE ,
         end_date DATE NULL ,
         ssh_key VARCHAR(800) ,
@@ -56,13 +58,11 @@ Create_Tables_Commands=(
         ,
         """
         CREATE TABLE user_services(
-        user_id_fk INTEGER ,
-        FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
         service_id_fk INTEGER ,
         FOREIGN KEY (service_id_fk) REFERENCES services(service_id) ,
         order_id INTEGER ,
         FOREIGN KEY (order_id) REFERENCES user_service_info(order_id_pk) ,
-        PRIMARY KEY(user_id_fk,service_id_fk,order_id)
+        PRIMARY KEY(service_id_fk,order_id)
         )
         """
         ,
