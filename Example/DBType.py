@@ -5,22 +5,24 @@ import time
 
 
 class User:
-    user_name = None
-    user_national_code = None
-    user_passwordhash = None
-    user_salt = None
-    user_registrationdate = None
-    user_email = None
-    user_id = None
+    first_name = None
+    last_name = None
+    national_code = None
+    email = None
+    password = None
+    salt = None
+    registrationdate = None
+    balance = None
 
-    def __init__(self, username, national_code, UserEmail ,passwordhash, salt):
-        self.user_name = username
-        self.user_national_code = national_code
-        self.user_passwordhash = passwordhash
-        self.user_salt = salt
-        self.user_registrationdate = datetime.now()
-        self.user_email = UserEmail
-
+    def __init__(self, First_name, Last_name,National_code, Email ,Password, Salt,RegistrationDate , Balance):
+        self.first_name = First_name
+        self.last_name = Last_name
+        self.national_code = National_code
+        self.email = Email
+        self.password = Password
+        self.salt = Salt
+        self.registrationdate = RegistrationDate
+        self.balance = Balance
 
 """ Service Data Type Class Definition"""
 
@@ -47,3 +49,20 @@ class Resource:
         self.resource_name = ResourceName
 
 
+"""Ticket Class Type"""
+
+class Ticket:
+    User_id = None
+    Created_date = None
+    Content = None
+    Reply_date = None
+    Reply_content = None
+    Status = None
+
+    def __init__(self,user_id,created_date,content,reply_date,reply_content,status):
+        self.User_id = user_id
+        self.Created_date = created_date
+        self.Content = content
+        self.Reply_date = reply_date
+        self.Reply_content = reply_content
+        self.Status = status

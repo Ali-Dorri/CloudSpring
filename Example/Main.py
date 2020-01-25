@@ -12,7 +12,6 @@ from Example import config
 from Example import Repository
 from Example import DBType
 
-
 Create_Tables_Commands=(
         """ 
         CREATE TABLE resources (
@@ -46,23 +45,9 @@ Create_Tables_Commands=(
         """
         ,
         """
-        CREATE TABLE user_services(
-        user_id_fk INTEGER ,
-        FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
-        service_id_fk INTEGER ,
-        FOREIGN KEY (service_id_fk) REFERENCES services(service_id) ,
-        resource_id_fk INTEGER,
-        FOREIGN KEY (resource_id_fk) REFERENCES resources(resource_id) ,
-        order_id INTEGER ,
-        PRIMARY KEY(user_id,order_id,resource_id)
-        )
-        """
-        ,
-        """
         CREATE TABLE user_service_info(
-        order_id_fk INTEGER ,
-        PRIMARY KEY(order_id_fk),
-        FOREIGN KEY(order_id_fk) REFERENCES user_services(order_id),
+        order_id_pk INTEGER ,
+        PRIMARY KEY(order_id_pk),
         created_date DATE ,
         end_date DATE NULL ,
         ssh_key VARCHAR(800) ,
@@ -71,8 +56,21 @@ Create_Tables_Commands=(
         """
         ,
         """
+        CREATE TABLE user_services(
+        user_id_fk INTEGER ,
+        FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
+        service_id_fk INTEGER ,
+        FOREIGN KEY (service_id_fk) REFERENCES services(service_id) ,
+        order_id INTEGER ,
+        FOREIGN KEY (order_id) REFERENCES user_service_info(order_id_pk) ,
+        PRIMARY KEY(user_id_fk,service_id_fk,order_id)
+        )
+        """
+        ,
+
+        """
         CREATE TABLE ticket(
-        ticket_id INTEGER SERIAL,
+        ticket_id SERIAL,
         PRIMARY KEY(ticket_id),
         user_id_fk INTEGER ,
         FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
@@ -83,25 +81,7 @@ Create_Tables_Commands=(
         status INTEGER
         )
         """
-        #CREATE TABLE user_additional(
-        #additional_id SERIAL PRIMARY KEY ,
-        #additional_name VARCHAR(50)
-        #)
-        #"""
-        #,
-        #"""
-        #CREATE TABLE user_detail(
-        #user_id_fk INTEGER ,
-        #FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
-        #user_additional_id_fk INTEGER ,
-        #FOREIGN KEY (user_additional_id_fk) REFERENCES user_additional(additional_id) ,
-        #content VARCHAR(500) NULL ,
-        #context_name VARCHAR(50)
-        #)
-        #"""
     )
-
-
 
 Connection = None
 
@@ -112,18 +92,21 @@ def connecttodb():
             params = config.config()
             print('connecting to PostgreSql DB ...')
             con = psycopg2.connect(port="5400",host="localhost",database="CloudSpring", user="postgres", password="rememberme")
-            print('after .connct')
             # create cursor
             cursor = con.cursor()
             global Connection
             Connection = con
             print('Connected to PostgreSql DB !')
-            sqlservercommand = Create_Tables_Commands
-            for command in sqlservercommand:
-                cursor.execute(command)
+            #sqlservercommand = Create_Tables_Commands
+            #for command in sqlservercommand:
+                #cursor.execute(command)
 
-            con.commit()
-            print('commands execution done ! :)')
+            #con.commit()
+
+            #insert = "INSERT INTO resources (resource_id,resource_name) VALUES (2,'OS')"
+            #cursor.execute(insert)
+            #cursor.close()
+            #con.commit()
             db_version = cursor.fetchone()
             print(db_version)
 
@@ -134,7 +117,7 @@ def connecttodb():
         finally:
             if con is None:
                 con.close()
-                print('DB Cnnection Closed !')
+
 
 
 
@@ -175,12 +158,18 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     connecttodb()
-    #Repo = Repository.Repository(Connection)
-    #user = DBType.User("Amir","09245857","a.m.sh.playstore@gmail.com","abcd909230","zxcvbnm")
+    Repo = Repository.Repository(Connection)
+    user = DBType.User('hossein','sharifian','045874425','hossein@yahoo.com','hossein1234','f1nd1ngn3m0','20120618','25000')
+    ticket = DBType.Ticket('1',None,'the content of ticket',None,None,'1')
     #Connection.cursor.execute()
     #result = Repository.RepositoryResult()
     #result = Repo.AddUser(user)
-    #print(result)
+    #result = Repo.CheckUser(user.email,"hossein1234")
+    #result = Repo.AddTicket(ticket)
+    #result = Repo.UpdateUserByEmail("85000","asf@yahoo.com")
+    result = Repo.GetUser("asf@yahoo.com")
+    print(result)
+
     """app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
