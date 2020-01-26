@@ -8,8 +8,7 @@
 
 import psycopg2
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Example import config
-from Example import Repository
+from Example import Repository, AdminRepository
 from Example import DBType
 from config import config
 
@@ -94,7 +93,7 @@ def connecttodb():
         try:
             params = config()
             print('connecting to PostgreSql DB ...')
-            con = psycopg2.connect(port="5432",host="localhost",database="CloudSpring", user="postgres", password="postgres")
+            con = psycopg2.connect(port="5432",host="localhost",database="CloudSpring", user="postgres", password="samplepass")
             print('after .connct')
             # create cursor
             cursor = con.cursor()
@@ -161,17 +160,20 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     connecttodb()
-    Repo = Repository.Repository(Connection)
-    user = DBType.User('hossein','sharifian','045874425','hossein@yahoo.com','hossein1234','f1nd1ngn3m0','20120618','25000')
-    ticket = DBType.Ticket('1',None,'the content of ticket',None,None,'1')
-    #Connection.cursor.execute()
-    #result = Repository.RepositoryResult()
-    #result = Repo.AddUser(user)
-    #result = Repo.CheckUser(user.email,"hossein1234")
-    #result = Repo.AddTicket(ticket)
-    #result = Repo.UpdateUserByEmail("85000","asf@yahoo.com")
-    result = Repo.GetUser("asf@yahoo.com")
-    print(result)
+    AdRep = AdminRepository.AdminRepository(Connection)
+    # result2 = AdRep.GetAllUser()
+    # result2 = AdRep.getUserServices(1)
+    # result2 = AdRep.editUserService(1,[1,4,8,9,12],[2,4,5,7,12])
+    # result2 = AdRep.GetAvailableServices()
+    # result2 = AdRep.EditServiceStock(3,27)
+    # result2 = AdRep.AddNewServiceStock('64GB',2,12)
+    # result2 = AdRep.ShowRepliedTickets()
+    # result2 = AdRep.SendReply('thank you for your feedback',7)
+    # result2 = AdRep.DenyTicket(5)
+    # result2 = AdRep.ShowTickets()
+    result2 = AdRep.RemoveUserService(1,3)
+
+    print(result2)
 
     """app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
