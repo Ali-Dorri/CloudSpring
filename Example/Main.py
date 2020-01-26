@@ -8,9 +8,13 @@
 
 import psycopg2
 from PyQt5 import QtCore, QtGui, QtWidgets
+from Example import config
+from Example import Repository
+from Example import DBType
 from config import config
 
 help(config)
+
 Create_Tables_Commands=(
         """ 
         CREATE TABLE resources (
@@ -82,8 +86,6 @@ Create_Tables_Commands=(
         """
 )
 
-
-
 Connection = None
 
 
@@ -96,23 +98,27 @@ def connecttodb():
             print('after .connct')
             # create cursor
             cursor = con.cursor()
+            global Connection
             Connection = con
             print('Connected to PostgreSql DB !')
-            """sqlservercommand = Create_Tables_Commands
-            for command in sqlservercommand:
-                cursor.execute(command)
+            #sqlservercommand = Create_Tables_Commands
+            #for command in sqlservercommand:
+                #cursor.execute(command)
 
-            con.commit()"""
-            print('commands execution done ! :)')
-            db_version = cursor.fetchone()
-            print(db_version)
+            #con.commit()
+
+            #insert = "INSERT INTO resources (resource_id,resource_name) VALUES (2,'OS')"
+            #cursor.execute(insert)
+            #cursor.close()
+            #con.commit()
+            # db_version = cursor.fetchone()
+            # print(db_version)
 
             # close the communication with the PostgreSQL
             # commit the changes
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-        finally:
-            if con is None:
+            print('error in database connection: ' + str(error))
+            if con is not None:
                 con.close()
                 print('DB Cnnection Closed !')
 
@@ -155,9 +161,21 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     connecttodb()
-    app = QtWidgets.QApplication(sys.argv)
+    Repo = Repository.Repository(Connection)
+    user = DBType.User('hossein','sharifian','045874425','hossein@yahoo.com','hossein1234','f1nd1ngn3m0','20120618','25000')
+    ticket = DBType.Ticket('1',None,'the content of ticket',None,None,'1')
+    #Connection.cursor.execute()
+    #result = Repository.RepositoryResult()
+    #result = Repo.AddUser(user)
+    #result = Repo.CheckUser(user.email,"hossein1234")
+    #result = Repo.AddTicket(ticket)
+    #result = Repo.UpdateUserByEmail("85000","asf@yahoo.com")
+    result = Repo.GetUser("asf@yahoo.com")
+    print(result)
+
+    """app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())"""
