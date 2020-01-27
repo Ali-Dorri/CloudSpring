@@ -208,7 +208,6 @@ def AddUserEmailTriger():
     query = """CREATE  TRIGGER  CheckUserEmail
 	    BEFORE INSERT ON users 
 	    REFERENCING NEW ROW AS NewTuple
-	    FOR EACH ROW
 	    WHEN (NewTuple.user_email NOT IN (SELECT user_email FROM users))
 	    INSERT INTO users (first_name,last_name,user_national_code,user_email,user_passwordhash,user_salt,user_registerdate,balance) VALUES (NewTuple.first_name,NewTuple.last_name,NewTuple.user_national_code,NewTuple.user_email,NewTuple.user_passwordhash,NewTuple.user_salt,NewTuple.user_registerdate,NewTuple.balance);"""
     global Connection
@@ -218,23 +217,28 @@ def AddUserEmailTriger():
         print("Trigger Added Successfully")
     except(Exception) as error:
         print(error)
-    
+
+
 if __name__ == "__main__":
     import sys
     connecttodb()
     #AddUser_Service_Info()
-    #Repo = Repository.Repository(Connection)
+    Repo = Repository.Repository(Connection)
     #user = DBType.User('hossein','sharifian','045874425','hossein@yahoo.com','hossein1234','f1nd1ngn3m0','20120618','25000')
     user = DBType.User('Amir', 'sharifian', '045887425', 'Amir@yahoo.com', 'Amir1234', 'f1nd1ngn3m0','20120618', '25000')
     #user = DBType.User('mahdi', 'kazemi', '045887425', 'asf@yahoo.com', 'kazemi1234', 'f1nd1ngn3m0', '20120618','25000')
     #ticket = DBType.Ticket('1',None,'the content of ticket',None,None,'1')
-    AddUserEmailTriger()
+    #AddUserEmailTriger()
     #Connection.cursor.execute()
     #result = Repository.RepositoryResult()
     #result = Repo.AddUser(user)
     #result = Repo.GetCurrentUserServices(user)
+    #result = Repo.GetUserBalance(user.email)
+    #result = Repo.GetCurrentUserServices(user.email)
     #result = Repo.CheckUser(user.email,"hossein1234")
     #Repo.GetAvailableOs()
+    new_services = [2,5,7,10,12,14]
+    result = Repo.UpdateUserServices(new_services,1)
     #services_to_add = [2,4,7,8,12,13]
     #result = Repo.AddUserService(services_to_add,user.email,"gdf54g54dfgdg6","sample_ssh_name")
     #result = Repo.AddTicket(ticket)

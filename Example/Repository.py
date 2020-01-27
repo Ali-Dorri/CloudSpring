@@ -167,16 +167,16 @@ class Repository:
                 return False
 
 
-    def GetCurrentUserServices(self,User):
-        if(User.email is not None):
-            result = self.GetUserId(User.email)
-            print(result)
+    def GetCurrentUserServices(self,user_email):
+        if(user_email is not None):
+            user_id = self.GetUserId(user_email)
+            print(user_id)
             packtids = None
-            for user_id in result:
-                packtids = self.GetUserPacket(user_id)[0]
-                print(packtids)
-                if(packtids != []):
-                    query = """SELECT service_id_fk FROM user_services U WHERE U.order_id = '%s' ORDER BY service_id_fk"""%(packtids)
+            packtids = self.GetUserPacket(user_id)
+            for packet_id in packtids:
+                print(packet_id)
+                if(packet_id != []):
+                    query = """SELECT service_id_fk FROM user_services U WHERE U.order_id = '%s' ORDER BY service_id_fk"""%(packet_id)
                     print(query)
                     try:
                         self.Cursor.execute(query)
@@ -194,6 +194,43 @@ class Repository:
             print(result)
             packtids = self.GetUserPacket(result)
             return packtids
+
+
+
+
+
+    def UpdateUserServices(self,new_services,packet_id):
+        if(new_services is not None and packet_id is not None):
+            query = """SELECT service_id_fk FROM user_services U WHERE U.order_id = '%s' ORDER BY service_id_fk"""%(packet_id)
+            count_query = """SELECT COUNT(service_id_fk) FROM user_services U WHERE U.order_id = '%s'"""%(packet_id)
+            print(query)
+            try:
+                self.Cursor.execute(query)
+                old_services = self.Cursor.fetchall()
+                li = []
+                j=0
+                for j in old_services:
+                    li.append(j[0])
+                self.Cursor.execute(count_query)
+                count_number = self.Cursor.fetchone()
+                print(li)
+                print(new_services)
+                i=0
+                for i in range(count_number[0]):
+                    final_query = """UPDATE user_services SET service_id_fk = '%s' WHERE service_id_fk = '%s' And order_id = '%s';"""%(new_services[i],li[i],packet_id)
+                    print(final_query)
+                    self.Cursor.execute(final_query)
+                    self.DBConnection.commit()
+                    print("UPDATE SUCCESSFULLY DONE !")
+            except (Exception) as error:
+                print(error)
+                return False
+
+
+
+
+
+
 
     "to add couple of new services with new packet_id for given user"
     def AddUserService(self,services,user_email,ssh_key,ssh_name):
@@ -221,7 +258,7 @@ class Repository:
                 print(error)
                 return False
 
-    def DeleteUserService(self):
+
 
 
     def GetAvailableResources(self,Resource_id):
@@ -235,6 +272,29 @@ class Repository:
             except (Exception) as error:
                 print(error)
                 return False
+
+
+    def GetUserBalance(self,user_email):
+        if(user_email is not None):
+            user_id = self.GetUserId(user_email)
+            query = """SELECT balance FROM users U WHERE U.user_id = '%s'"""%(user_id)
+            print(query)
+            try:
+                self.Cursor.execute(query)
+                result = self.Cursor.fetchone()[0]
+                print(result)
+                return result
+            except(Exception) as Error:
+                print(Error)
+                return False
+
+
+
+    def UpdateUserBalance(self,user_email,new_user_balance):
+        if(user_email is not None and new_user_balance is not None):
+            self.UpdateUserByEmail(new_user_balance,user_email)
+
+
 
 
 
