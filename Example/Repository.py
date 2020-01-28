@@ -57,14 +57,18 @@ class Repository:
 
 
     def CheckUser(self,username,password):
+        if username is None or password is None:
+            return False
+
         query = """SELECT user_salt FROM users U WHERE U.user_email = '%s'""" %(username)
         print(query)
         self.Cursor.execute(query)
-        salt = self.Cursor.fetchone()[0]
-        print(salt)
-        if(salt is None):
+        saltEntity = self.Cursor.fetchone()
+        if saltEntity is None:
             return False
         else:
+            salt = saltEntity[0]
+            print(salt)
             temp = password + salt
             passwordhash = hashlib.md5(temp.encode())
             print("Run Checkuser")
@@ -79,7 +83,18 @@ class Repository:
                 print(entity)
                 return True
 
+    def isAdminByEmail(self, userEmail):
+        userId = self.GetUser(userEmail)[0]
+        return self.isAdmin(userId)
 
+    def isAdmin(self, userId):
+        query = """SELECT admin_id_pk FROM admins WHERE user_id_fk = '%s'""" % (userId)
+        self.Cursor.execute(query)
+        entity = self.Cursor.fetchone()
+        if entity is None:
+            return False
+        else:
+            return True
 
 
     def AddTicket(self,Ticket):
@@ -129,7 +144,6 @@ class Repository:
     def GetUser(self,user_email):
         if(user_email is not None):
             query="""SELECT * From users U Where U.user_email = '%s' """%(user_email)
-            print(query)
             try:
                 self.Cursor.execute(query)
                 result = self.Cursor.fetchall()

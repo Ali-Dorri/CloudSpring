@@ -8,10 +8,10 @@
 
 import psycopg2
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Example import config
 from Example import Repository
 from Example import DBType
 from config import config
+from Example.UI.MainUI import MainUI
 
 help(config)
 
@@ -49,7 +49,7 @@ Create_Tables_Commands=(
         ,
         """
         CREATE TABLE user_service_info(
-        order_id_pk INTEGER ,
+        order_id_pk SERIAL,
         PRIMARY KEY(order_id_pk),
         user_id_fk INTEGER NOT NULL,
         FOREIGN KEY (user_id_fk) REFERENCES users(user_id) ,
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     import sys
     connecttodb()
     Repo = Repository.Repository(Connection)
-    user = DBType.User('hossein','sharifian','045874425','hossein@yahoo.com','hossein1234','f1nd1ngn3m0','20120618','25000')
+    user = DBType.User(-1, 'hossein','sharifian','045874425','hossein@yahoo.com','hossein1234','f1nd1ngn3m0','20120618','25000')
     ticket = DBType.Ticket('1',None,'the content of ticket',None,None,'1')
     #Connection.cursor.execute()
     #result = Repository.RepositoryResult()
@@ -172,6 +172,10 @@ if __name__ == "__main__":
     #result = Repo.UpdateUserByEmail("85000","asf@yahoo.com")
     result = Repo.GetUser("asf@yahoo.com")
     print(result)
+    global Connection
+    if Connection is not None:
+        mainUI = MainUI(Connection, Repo)
+        mainUI.startUI()
 
     """app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

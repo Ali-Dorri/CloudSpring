@@ -5,6 +5,7 @@ import time
 
 
 class User:
+    id = None
     first_name = None
     last_name = None
     national_code = None
@@ -14,7 +15,8 @@ class User:
     registrationdate = None
     balance = None
 
-    def __init__(self, First_name, Last_name,National_code, Email ,Password, Salt,RegistrationDate , Balance):
+    def __init__(self, id, First_name, Last_name,National_code, Email ,Password, Salt,RegistrationDate , Balance):
+        self.id = id
         self.first_name = First_name
         self.last_name = Last_name
         self.national_code = National_code
@@ -23,6 +25,12 @@ class User:
         self.salt = Salt
         self.registrationdate = RegistrationDate
         self.balance = Balance
+
+    @staticmethod
+    def tupleToUser(userTuple):
+        return User(userTuple[0], userTuple[1], userTuple[2], userTuple[3], userTuple[4], userTuple[5], userTuple[6], userTuple[7],
+                    userTuple[8])
+
 
 """ Service Data Type Class Definition"""
 
