@@ -172,7 +172,6 @@ if __name__ == "__main__":
     #result = Repo.UpdateUserByEmail("85000","asf@yahoo.com")
     result = Repo.GetUser("asf@yahoo.com")
     print(result)
-    global Connection
     if Connection is not None:
         mainUI = MainUI(Connection, Repo)
         mainUI.startUI()

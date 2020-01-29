@@ -1,5 +1,7 @@
 from datetime import datetime
 import time
+import random
+import string
 
 """ User Data Type Class Definition"""
 
@@ -14,6 +16,12 @@ class User:
     salt = None
     registrationdate = None
     balance = None
+
+    @classmethod
+    def emptyUser(cls):
+        dateString = str(datetime.now().date()).replace("-","", 10)
+        return cls(id = None, First_name = None, Last_name = None, National_code = None, Email = None, Password = None
+                   , Salt = randomString(10), RegistrationDate = dateString, Balance = 0)
 
     def __init__(self, id, First_name, Last_name,National_code, Email ,Password, Salt,RegistrationDate , Balance):
         self.id = id
@@ -74,3 +82,27 @@ class Ticket:
         self.Reply_date = reply_date
         self.Reply_content = reply_content
         self.Status = status
+
+class ServicePacket:
+
+    def __init__(self, packetId, createDate, endDate, os, ram, cpu, hd, bw, core = 4, otherResources = []):
+        self.packetId = packetId
+        self.createDate = createDate
+        self.endDate = endDate
+        self.os = os
+        self.ram = ram
+        self.cpu = cpu
+        self.hd = hd
+        self.bw = bw
+        self.core = core
+        self.otherResources = otherResources
+
+    @staticmethod
+    def tupleToPacket(packetTuple):
+        return ServicePacket(packetTuple[0], packetTuple[1], packetTuple[2], packetTuple[3], packetTuple[4], packetTuple[5], packetTuple[6],
+                    packetTuple[7], packetTuple[8])
+
+def randomString(stringLength=10):
+    """Generate a random string of fixed length """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(stringLength))

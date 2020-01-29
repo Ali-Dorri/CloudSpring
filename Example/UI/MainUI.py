@@ -1,4 +1,5 @@
 from PyQt5 import  QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 import sys
 from Example.UI.RegisterUI import RegisterUI
 
@@ -16,6 +17,21 @@ class MainUI:
         sys.exit(app.exec_())
 
     @classmethod
-    def storeObject(cls, window):
-        if window not in cls.storedObjects:
-            cls.storedObjects.append(window)
+    def trackObject(cls, object):
+        if object not in cls.storedObjects:
+            cls.storedObjects.append(object)
+
+    @classmethod
+    def unTrackObject(cls, object):
+        cls.storedObjects.remove(object)
+
+    @staticmethod
+    def showMessage(message, title = "Message", infoText = "", detailsText = ""):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText(message)
+        msg.setInformativeText(infoText)
+        msg.setWindowTitle(title)
+        msg.setDetailedText(detailsText)
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msg.exec_()

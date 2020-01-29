@@ -15,7 +15,7 @@ class AdminUI:
         self.window = None
 
     def startUI(self):
-        MainUI.MainUI.storeObject(self)
+        MainUI.MainUI.trackObject(self)
         print('start admin ui')
         self.window = QtWidgets.QMainWindow()
         self.setupUI()
@@ -23,7 +23,9 @@ class AdminUI:
         self.window.show()
 
     def setupUI(self):
-        pass
+        self.window.resize(700, 500)
+        self.window.setMaximumSize(QtCore.QSize(700, 500))
+        self.window.setMinimumSize(QtCore.QSize(700, 500))
 
     def retranslateUI(self):
         _translate = QtCore.QCoreApplication.translate

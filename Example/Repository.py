@@ -24,7 +24,6 @@ class Repository:
             # self.Cursor.execute("""SELECT NOW()::date""")
             # datetimenow = self.Cursor.fetchone()
             datetimenow = datetime.now().date()
-            print("gharare print beshe")
             print(datetimenow)
             temp = User.password + User.salt
             passwordhash = hashlib.md5(temp.encode())
@@ -37,6 +36,12 @@ class Repository:
             try:
                 result = self.Cursor.execute(query)
                 self.DBConnection.commit()
+
+                """check addition was succeeded"""
+                query = """SELECT user_id FROM users WHERE user_email = '%s'"""%(User.email)
+                self.Cursor.execute(query)
+                userTuple = self.Cursor.fetchone()
+                return userTuple is not None
             except (Exception) as error:
                 print(error)
             #finally:
@@ -50,6 +55,7 @@ class Repository:
             #RepositoryResult.code = False
             #RepositoryResult.Error = "Bad Request"
             #return RepositoryResult
+            return False
 
 
 
