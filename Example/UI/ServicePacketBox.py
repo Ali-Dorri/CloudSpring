@@ -3,13 +3,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class ServicePacketBox:
 
-    def __init__(self, packet, tabUI, index):
+    def __init__(self, packet, tabUI):
         self.packet = packet
         self.tabUI = tabUI
         self.servicePackGroup = None
-        self.index = index
 
-    def createBox(self, parentWidget, parentLayout):
+    def createBox(self, parentWidget, parentLayout, index):
         self.servicePackGroup = QtWidgets.QGroupBox(parentWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -102,7 +101,7 @@ class ServicePacketBox:
         self.gridLayout.addWidget(self.bwLabel, 7, 7, 1, 1)
         self.startDateLabel = QtWidgets.QLabel(self.servicePackGroup)
         self.startDateLabel.setMinimumSize(QtCore.QSize(0, 30))
-        self.startDateLabel.setMaximumSize(QtCore.QSize(60, 30))
+        self.startDateLabel.setMaximumSize(QtCore.QSize(70, 30))
         self.startDateLabel.setStyleSheet("")
         self.startDateLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.startDateLabel.setObjectName("startDateLabel")
@@ -130,7 +129,7 @@ class ServicePacketBox:
         self.gridLayout.addWidget(self.label_205, 6, 0, 1, 1)
         self.endDateLabel = QtWidgets.QLabel(self.servicePackGroup)
         self.endDateLabel.setMinimumSize(QtCore.QSize(0, 30))
-        self.endDateLabel.setMaximumSize(QtCore.QSize(60, 30))
+        self.endDateLabel.setMaximumSize(QtCore.QSize(70, 30))
         self.endDateLabel.setStyleSheet("")
         self.endDateLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.endDateLabel.setObjectName("endDateLabel")
@@ -154,8 +153,8 @@ class ServicePacketBox:
         self.packRemoveButton.setStyleSheet("background-color: rgb(0, 255, 0);")
         self.packRemoveButton.setObjectName("packRemoveButton")
         self.gridLayout.addWidget(self.packRemoveButton, 6, 9, 1, 1)
-        parentLayout.addWidget(self.servicePackGroup, 0, 0, 1, 1)
-        self.servicePackGroup.setTitle("Service Pack " + str(self.index))
+        parentLayout.addWidget(self.servicePackGroup, index, 0, 1, 1)
+        self.servicePackGroup.setTitle("Service Pack " + str(index))
 
     def connectButtons(self):
         self.packEditButton.clicked.connect(self.editPacket)
@@ -164,17 +163,17 @@ class ServicePacketBox:
 
     def retranslateUI(self):
         _translate = QtCore.QCoreApplication.translate
-        self.hdLabel.setText(_translate("UserWindow", str(self.packet.hd) + "GB"))
-        self.cpuLabel.setText(_translate("UserWindow", str(self.packet.cpu) + "GHz"))
+        self.hdLabel.setText(_translate("UserWindow", str(self.packet.hd)))
+        self.cpuLabel.setText(_translate("UserWindow", str(self.packet.cpu)))
         self.label_206.setText(_translate("UserWindow", "OS"))
         self.coreLabel.setText(_translate("UserWindow", str(self.packet.core)))
         self.label_210.setText(_translate("UserWindow", "HD"))
-        self.ramLabel.setText(_translate("UserWindow", str(self.packet.ram) + "GB"))
+        self.ramLabel.setText(_translate("UserWindow", str(self.packet.ram)))
         self.label_208.setText(_translate("UserWindow", "Core"))
         self.label_211.setText(_translate("UserWindow", "BW"))
-        self.osLabel_17.setText(_translate("UserWindow", "Windows"))
+        self.osLabel_17.setText(_translate("UserWindow", str(self.packet.os)))
         self.label_207.setText(_translate("UserWindow", "RAM"))
-        self.bwLabel.setText(_translate("UserWindow", str(self.packet.bw) + "KB"))
+        self.bwLabel.setText(_translate("UserWindow", str(self.packet.bw)))
         self.startDateLabel.setText(_translate("UserWindow", str(self.packet.createDate)))
         self.packEditButton.setText(_translate("UserWindow", "Edit"))
         self.label_209.setText(_translate("UserWindow", "CPU"))
@@ -185,11 +184,11 @@ class ServicePacketBox:
         self.packRemoveButton.setText(_translate("UserWindow", "Remove"))
 
     def editPacket(self):
-        self.tabUI.editPacket(self.index)
-        self.tabUI.userUI.requestServiceTabUI.setDefaultServices(self.packet)
+        self.tabUI.editPacket(self.packet)
 
     def removePacket(self):
-        self.tabUI.removePacket(self.index)
+        self.tabUI.removePacket(self)
+        self.servicePackGroup.setParent(None)
 
     def snapshot(self):
         #TODO store snapshot in a directory

@@ -11,20 +11,16 @@ class ServicePacketsTabUI:
 
     def initialize(self):
         self.setupUI()
-        # servicePacketTuples = self.userUI.repo.GetPackets(self.userUI.user.id)
-        tuple0 = (0, '20150513', '20160614', 'Mac', '8GB', '10GHz', '500GB', '200KB', 4)
-        tuple1 = (0, '20150823', '20160620', 'Windows', '16GB', '10GHz', '1TB', '250KB', 8)
-        servicePacketTuples = [tuple0, tuple1]
-        self.createBoxes(servicePacketTuples)
         self.retranslateUI()
 
     def fillUI(self):
-        #SQL
-        pass
+        servicePacketTuples = self.userUI.repo.GetUserPackets(self.userUI.user.id)
+        self.createBoxes(servicePacketTuples)
 
     def clearUI(self):
         for i in range(len(self.packetBoxes)):
-            self.removePacket(i)
+            self.packetBoxes[i].servicePackGroup.setParent(None)
+        self.packetBoxes.clear()
 
     def getTab(self):
         return self.userUI.servicePacketsTab
@@ -45,29 +41,33 @@ class ServicePacketsTabUI:
         self.gridLayout_3.setContentsMargins(-1, 11, -1, -1)
         self.gridLayout_3.setVerticalSpacing(7)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_3.addItem(spacerItem, 1, 0, 1, 1)
         self.servicePacketsScrollArea.setWidget(self.servicePacketsScrollAreaWidgetContents)
 
     def createBoxes(self, servicePacketTuples):
         if servicePacketTuples is not None:
-            for i in range(len(servicePacketTuples) - 1, -1, -1):
+            for i in range(len(servicePacketTuples)):
                 packetTuple = servicePacketTuples[i]
                 packet = DBType.ServicePacket.tupleToPacket(packetTuple)
-                packetBox = ServicePacketBox(packet, self, i)
+                packetBox = ServicePacketBox(packet, self)
                 packetBox.createBox(parentWidget=self.servicePacketsScrollAreaWidgetContents,
-                                    parentLayout=self.gridLayout_3)
+                                    parentLayout=self.gridLayout_3, index=i)
                 packetBox.connectButtons()
                 packetBox.retranslateUI()
                 self.packetBoxes.append(packetBox)
+        self.setSpacer()
+
+    def setSpacer(self):
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_3.addItem(spacerItem, 1, 0, 1, 1)
 
     def retranslateUI(self):
         pass
 
-    def editPacket(self, packIndex):
+    def editPacket(self, packet):
         self.userUI.switchTab(self.userUI.requestServiceTabUI)
+        self.userUI.requestServiceTabUI.setToEditMode(packet)
 
-    def removePacket(self, packIndex):
-        #test just removing fromn list
-        del self.packetBoxes[packIndex]
-        pass
+    def removePacket(self, packetBox):
+        self.packetBoxes.remove(packetBox)
+        #remove from database
+        self.userUI.repo.RemoveServicePacket(packetBox.packet.packetId)

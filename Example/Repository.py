@@ -34,16 +34,18 @@ class Repository:
             #Query = "INSERT INTO users(user_name,user_national_code,user_email,user_passwordhash,user_salt,user_registerdate) VALUES(' " + User.user_name + "',' " + User.user_national_code + " ', ' " + User.user_email + " ' ,' " + User.user_passwordhash + " ' , ' " + User.user_salt + " ' ,'" + str(datetimenow) + "')"
             print(query)
             try:
-                result = self.Cursor.execute(query)
-                self.DBConnection.commit()
-
-                """check addition was succeeded"""
-                query = """SELECT user_id FROM users WHERE user_email = '%s'"""%(User.email)
-                self.Cursor.execute(query)
+                """check user with same email exists"""
+                checkQuery = """SELECT user_id FROM users WHERE user_email = '%s'"""%(User.email)
+                self.Cursor.execute(checkQuery)
                 userTuple = self.Cursor.fetchone()
-                return userTuple is not None
+                print(userTuple)
+                if userTuple is None:
+                    result = self.Cursor.execute(query)
+                    self.DBConnection.commit()
+                    return True
             except (Exception) as error:
                 print(error)
+                return False
             #finally:
              #   if self.DBConnection is None:
               #      self.Cursor.close()
@@ -82,11 +84,11 @@ class Repository:
             checkquery = """SELECT user_email FROM users U WHERE U.user_email = '%s' AND U.user_passwordhash = '%s' """ %(username,finalpasswordhash)
             print(checkquery)
             self.Cursor.execute(checkquery)
-            entity = self.Cursor.fetchone()[0]
+            entity = self.Cursor.fetchone()
             if(entity is None):
                 return False
             else:
-                print(entity)
+                print(entity[0])
                 return True
 
     def isAdminByEmail(self, userEmail):
@@ -179,7 +181,65 @@ class Repository:
         if ( Service.service_id is not None & Service.service_name is not None & Service.resource_id is not None & Service.stock >= 1 & User.user_id is not None):
             Query =  "INSERT INTO user_services(user_id_fk,service_id_fk,resource_id_fk,created_date,end_date,packet_id) VALUES(" + User.user_id  + " , " + Service.service_id + " , " + Service.resource_id + ")"
 
+    def GetUserPackets(self, userId):
+        if userId is None:
+            return None
+        query = """select info.order_id_pk, info.created_date, info.end_date, os.value As OS, ram.value As RAM, cpu.value As CPU
+             , hd.value As HD, bw.value As BW, core.value As CORE
+            from user_service_info info,
+                (select user_services.order_id As order, services.value As value
+                from user_services, services, user_service_info info
+                where info.user_id_fk = %s And info.order_id_pk = user_services.order_id 
+                 And user_services.service_id_fk = services.service_id And services.resource_id_fk = 1) os
+                , (select user_services.order_id As order, services.value As value
+                from user_services, services, user_service_info info
+                where info.user_id_fk = %s And info.order_id_pk = user_services.order_id 
+                 And user_services.service_id_fk = services.service_id And services.resource_id_fk = 2) ram
+                ,(select user_services.order_id As order, services.value As value
+                from user_services, services, user_service_info info
+                where info.user_id_fk = %s And info.order_id_pk = user_services.order_id 
+                 And user_services.service_id_fk = services.service_id And services.resource_id_fk = 3) cpu
+                ,(select user_services.order_id As order, services.value As value
+                from user_services, services, user_service_info info
+                where info.user_id_fk = %s And info.order_id_pk = user_services.order_id 
+                 And user_services.service_id_fk = services.service_id And services.resource_id_fk = 4) hd
+                ,(select user_services.order_id As order, services.value As value
+                from user_services, services, user_service_info info
+                where info.user_id_fk = %s And info.order_id_pk = user_services.order_id 
+                 And user_services.service_id_fk = services.service_id And services.resource_id_fk = 5) bw
+                 , (select user_services.order_id As order, services.value As value
+                from user_services, services, user_service_info info
+                where info.user_id_fk = %s And info.order_id_pk = user_services.order_id 
+                 And user_services.service_id_fk = services.service_id And services.resource_id_fk = 5) core
+            where os.order = info.order_id_pk And ram.order = info.order_id_pk And cpu.order = info.order_id_pk 
+            And hd.order = info.order_id_pk And bw.order = info.order_id_pk And core.order = info.order_id_pk"""\
+                %(userId, userId, userId, userId, userId, userId)
 
+        try:
+            self.Cursor.execute(query)
+            tuples = self.Cursor.fetchall()
+            return tuples
+        except (Exception) as error:
+            print(error)
+            return None
 
+    def RemoveServicePacket(self, packId):
+        query1 = """delete from user_services where order_id = %s;"""%(packId)
+        query2 = """delete from user_service_info where order_id_pk = %s"""%(packId)
+        query = query1 + query2
 
+        try:
+            self.Cursor.execute(query)
+            self.DBConnection.commit()
+        except (Exception) as error:
+            print(error)
+
+    def GetUserBalance(self, userId):
+        query = """select balance from users where user_id = %s"""%(userId)
+        try:
+            self.Cursor.execute(query)
+            return self.Cursor.fetchone()
+        except (Exception) as error:
+            print(error)
+            return None
 
